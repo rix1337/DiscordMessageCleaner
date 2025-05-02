@@ -27,5 +27,6 @@ RUN if [[ ${VS} == "false" ]] ; then echo "Grabbing latest version from pypi.org
 ENV PYTHONUNBUFFERED=1
 ENV TOKEN=""
 ENV CHANNEL_ID=""
+ENV DAYS=""
 
-ENTRYPOINT ["sh", "-c", "discord_message_cleaner --token=$TOKEN --channel_id=$CHANNEL_ID"]
+ENTRYPOINT ["sh", "-c", "discord_message_cleaner --token=$TOKEN --channel_id=$CHANNEL_ID --days=$DAYS"]

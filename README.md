@@ -15,6 +15,7 @@ Cleans messages from a discord channel older than a set time in days
 discord_message_cleaner
   --token=<your_discord_bot_token>
   --channel_id=<your_discord_channel_id>
+  --days=<number_of_days>
   ```
 
 # Docker
@@ -23,5 +24,6 @@ docker run -d \
   --name="DiscordMessageCleaner" \
   -e 'TOKEN=<your_discord_bot_token>'
   -e 'CHANNEL_ID=<your_discord_channel_id>'
+  -e 'DAYS=<number_of_days>'
   rix1337/docker-discord-message-cleaner:latest
   ```
