@@ -20,6 +20,7 @@ def run():
     parser = argparse.ArgumentParser()
     parser.add_argument("--token", help="Discord Bot Token")
     parser.add_argument("--channel_id", help="Discord Channel ID with the bot already in it")
+    parser.add_argument("--days", type=int, default=7, help="Number of days to keep messages (default: 7)")
     arguments = parser.parse_args()
 
     if not arguments.token:
@@ -31,6 +32,11 @@ def run():
 
     token = arguments.token
     channel_id = int(arguments.channel_id)
+    days = int(arguments.days)
+
+    print(f"[DiscordMessageCleaner] Token: {token}")
+    print(f"[DiscordMessageCleaner] Channel ID: {channel_id}")
+    print(f"[DiscordMessageCleaner] Days: {days}")
 
     try:
         while True:
@@ -44,7 +50,7 @@ def run():
                 channel = bot.get_channel(channel_id)
 
                 if channel:
-                    cutoff = datetime.datetime.utcnow() - datetime.timedelta(weeks=1)
+                    cutoff = datetime.datetime.utcnow() - datetime.timedelta(days=days)
                     async for msg in channel.history(limit=None, before=cutoff):
                         try:
                             await msg.delete()
