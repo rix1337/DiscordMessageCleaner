@@ -1,0 +1,27 @@
+#  DiscordMessageCleaner
+
+[![PyPI version](https://badge.fury.io/py/discord-message-cleaner.svg)](https://badge.fury.io/py/discord-message-cleaner)
+[![GitHub Sponsorship](https://img.shields.io/badge/support-me-red.svg)](https://github.com/users/rix1337/sponsorship)
+
+Cleans messages from a discord channel older than a set time in days
+
+# Setup
+
+`pip install discord-message-cleaner`
+
+# Run
+
+```
+discord_message_cleaner
+  --token=<your_discord_bot_token>
+  --channel_id=<your_discord_channel_id>
+  ```
+
+# Docker
+```
+docker run -d \
+  --name="DiscordMessageCleaner" \
+  -e 'TOKEN=<your_discord_bot_token>'
+  -e 'CHANNEL_ID=<your_discord_channel_id>'
+  rix1337/docker-discord-message-cleaner:latest
+  ```
