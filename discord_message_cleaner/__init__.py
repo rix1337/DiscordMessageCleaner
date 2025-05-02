@@ -7,6 +7,7 @@ import asyncio
 import datetime
 import sys
 import time
+import logging
 
 import discord
 from discord.ext import commands
@@ -44,9 +45,13 @@ def run():
             intents.messages = True
             bot = commands.Bot(command_prefix='!', intents=intents)
 
+            logging.getLogger('discord.ext.commands.bot').setLevel(logging.ERROR)
+            logging.getLogger('discord.gateway').setLevel(logging.ERROR)
+            logging.getLogger('discord.client').setLevel(logging.ERROR)
+
             @bot.event
             async def on_ready():
-                print(f'Logged in as {bot.user}')
+                print(f'[DiscordMessageCleaner] Logged in as {bot.user}')
                 channel = bot.get_channel(channel_id)
 
                 if channel:
@@ -54,17 +59,19 @@ def run():
                     async for msg in channel.history(limit=None, before=cutoff):
                         try:
                             await msg.delete()
-                            print(f"Deleted: {msg.id}")
+                            print(f"[DiscordMessageCleaner] Deleted: {msg.id}")
                             await asyncio.sleep(1.1)  # Small delay to avoid hitting rate limits
                         except discord.Forbidden:
-                            print(f"Missing permissions to delete message {msg.id}")
+                            print(f"[DiscordMessageCleaner] Missing permissions to delete message {msg.id}")
                         except discord.HTTPException as e:
-                            print(f"Rate limited or failed to delete {msg.id}: {e}")
+                            print(f"[DiscordMessageCleaner] Rate limited or failed to delete {msg.id}: {e}")
                             await asyncio.sleep(5)  # Wait longer if rate-limited
 
                 await bot.close()
 
             bot.run(token)
+
+            print("[DiscordMessageCleaner] Finished cleaning messages. Restarting in 1 hour...")
             time.sleep(60 * 60)
 
     except KeyboardInterrupt:

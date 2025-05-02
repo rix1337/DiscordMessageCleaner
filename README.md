@@ -9,6 +9,27 @@ Cleans messages from a discord channel older than a set time in days
 
 `pip install discord-message-cleaner`
 
+## 🚀 Setting Up & Inviting DeleteBot
+
+1. **Create a Discord Application**  
+   - Go to the [Discord Developer Portal](https://discord.com/developers/applications).  
+   - Click **New Application**, give it a name (e.g. “DeleteBot”), and save.
+
+2. **Add a Bot User**  
+   - In your application sidebar, select **Bot** → **Add Bot** → **Yes, do it**.  
+   - Under **Privileged Gateway Intents**, enable **Message Content Intent**.  
+
+3. **Generate an Invite Link**  
+   - In the sidebar, go to **OAuth2** → **URL Generator**.  
+   - Under **Scopes**, check: `bot`  
+   - Under **Bot Permissions**, check at minimum:  
+     - **Read Message History**  
+     - **Manage Messages**  
+   - Copy the generated URL at the bottom.
+
+4. **Invite to Your Server**  
+   - Paste the URL into your browser, select your server, and authorize.
+
 # Run
 
 ```
