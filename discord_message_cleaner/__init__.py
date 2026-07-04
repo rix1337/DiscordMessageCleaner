@@ -15,6 +15,51 @@ from discord.ext import commands
 from discord_message_cleaner.providers import version
 
 
+async def delete_old_messages(destination, cutoff):
+    async for msg in destination.history(limit=None, before=cutoff):
+        try:
+            await msg.delete()
+            print(f"[DiscordMessageCleaner] Deleted: {msg.id}")
+            await asyncio.sleep(1.1)  # Small delay to avoid hitting rate limits
+        except discord.Forbidden:
+            print(f"[DiscordMessageCleaner] Missing permissions to delete message {msg.id}")
+        except discord.HTTPException as e:
+            print(f"[DiscordMessageCleaner] Rate limited or failed to delete {msg.id}: {e}")
+            await asyncio.sleep(5)  # Wait longer if rate-limited
+
+
+async def delete_thread_if_empty(thread):
+    try:
+        if not [msg async for msg in thread.history(limit=1)]:
+            await thread.delete(reason="Thread is empty after message cleanup")
+            print(f"[DiscordMessageCleaner] Deleted empty thread: {thread.id}")
+    except discord.Forbidden:
+        print(f"[DiscordMessageCleaner] Missing permissions to delete empty thread {thread.id}")
+    except discord.HTTPException as e:
+        print(f"[DiscordMessageCleaner] Failed to check or delete thread {thread.id}: {e}")
+
+
+async def clean_threads(channel, cutoff):
+    threads = {thread.id: thread for thread in channel.threads}
+
+    try:
+        async for thread in channel.archived_threads(limit=None):
+            threads[thread.id] = thread
+    except (discord.Forbidden, discord.HTTPException) as e:
+        print(f"[DiscordMessageCleaner] Failed to list archived threads: {e}")
+
+    if isinstance(channel, discord.TextChannel):
+        try:
+            async for thread in channel.archived_threads(limit=None, private=True):
+                threads[thread.id] = thread
+        except (discord.Forbidden, discord.HTTPException) as e:
+            print(f"[DiscordMessageCleaner] Failed to list private archived threads: {e}")
+
+    for thread in threads.values():
+        await delete_old_messages(thread, cutoff)
+        await delete_thread_if_empty(thread)
+
+
 def run():
     print("[DiscordMessageCleaner] Version " + version.get_version() + " by rix1337")
 
@@ -55,17 +100,11 @@ def run():
                 channel = bot.get_channel(channel_id)
 
                 if channel:
-                    cutoff = datetime.datetime.utcnow() - datetime.timedelta(days=days)
-                    async for msg in channel.history(limit=None, before=cutoff):
-                        try:
-                            await msg.delete()
-                            print(f"[DiscordMessageCleaner] Deleted: {msg.id}")
-                            await asyncio.sleep(1.1)  # Small delay to avoid hitting rate limits
-                        except discord.Forbidden:
-                            print(f"[DiscordMessageCleaner] Missing permissions to delete message {msg.id}")
-                        except discord.HTTPException as e:
-                            print(f"[DiscordMessageCleaner] Rate limited or failed to delete {msg.id}: {e}")
-                            await asyncio.sleep(5)  # Wait longer if rate-limited
+                    cutoff = discord.utils.utcnow() - datetime.timedelta(days=days)
+                    if isinstance(channel, discord.TextChannel):
+                        await delete_old_messages(channel, cutoff)
+                    if isinstance(channel, (discord.TextChannel, discord.ForumChannel)):
+                        await clean_threads(channel, cutoff)
 
                 await bot.close()
 

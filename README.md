@@ -3,7 +3,8 @@
 [![PyPI version](https://badge.fury.io/py/discord-message-cleaner.svg)](https://badge.fury.io/py/discord-message-cleaner)
 [![GitHub Sponsorship](https://img.shields.io/badge/support-me-red.svg)](https://github.com/users/rix1337/sponsorship)
 
-Cleans messages from a discord channel older than a set time in days
+Cleans messages from a Discord channel and its threads when they are older than a set time in days.
+Threads left empty after cleanup are deleted.
 
 # Setup
 
@@ -25,6 +26,7 @@ Cleans messages from a discord channel older than a set time in days
    - Under **Bot Permissions**, check at minimum:  
      - **Read Message History**  
      - **Manage Messages**  
+     - **Manage Threads** (required to delete empty threads and access archived private threads)
    - Copy the generated URL at the bottom.
 
 4. **Invite to Your Server**  
